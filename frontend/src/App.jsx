@@ -172,7 +172,7 @@ function AppShell() {
       latitude: selectedLocation.latitude,
       longitude: selectedLocation.longitude,
       current: 'temperature_2m,weather_code',
-      daily: 'temperature_2m_max,temperature_2m_min,temperature_2m_mean,precipitation_sum,relative_humidity_2m_mean,pressure_msl_mean,wind_speed_10m_max',
+      daily: 'temperature_2m_max,temperature_2m_min,temperature_2m_mean,precipitation_sum,wind_speed_10m_max',
       past_days: '30',
       forecast_days: '1',
       timezone: 'auto',
