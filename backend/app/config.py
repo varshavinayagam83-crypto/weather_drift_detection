@@ -2,7 +2,6 @@ import json
 from functools import lru_cache
 from typing import List
 
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,29 +12,22 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7
-    cors_origins: List[str] = ["http://localhost:5173"]
+    cors_origins: str = "http://localhost:5173"
     environment: str = "development"
     debug: bool = True
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
 
-    @field_validator("cors_origins", mode="before")
-    @classmethod
-    def parse_cors_origins(cls, value):
-        if value is None:
+    @property
+    def cors_origins_list(self) -> List[str]:
+        value = (self.cors_origins or "").strip()
+        if not value:
             return ["http://localhost:5173"]
-        if isinstance(value, str):
-            value = value.strip()
-            if not value:
-                return ["http://localhost:5173"]
-            if value.startswith("["):
-                return json.loads(value)
-            if "," in value:
-                return [item.strip() for item in value.split(",") if item.strip()]
-            return [value]
-        if isinstance(value, list):
-            return value
-        return [str(value)]
+        if value.startswith("["):
+            return json.loads(value)
+        if "," in value:
+            return [item.strip() for item in value.split(",") if item.strip()]
+        return [value]
 
 
 @lru_cache
