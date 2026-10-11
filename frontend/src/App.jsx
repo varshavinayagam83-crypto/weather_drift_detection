@@ -192,7 +192,45 @@ function AppShell() {
           temperature: data.current.temperature_2m,
           condition: weatherConditions[data.current.weather_code] ?? 'Variable conditions',
         });
-        setWeatherHistory(data.daily);
+        
+const hourlyByDay = {};
+
+data.hourly.time.forEach((timestamp, index) => {
+  const day = timestamp.slice(0, 10);
+
+  if (!hourlyByDay[day]) {
+    hourlyByDay[day] = {
+      humidity: [],
+      pressure: [],
+    };
+  }
+
+  const humidity = data.hourly.relative_humidity_2m[index];
+  const pressure = data.hourly.pressure_msl[index];
+
+  if (Number.isFinite(humidity)) {
+    hourlyByDay[day].humidity.push(humidity);
+  }
+
+  if (Number.isFinite(pressure)) {
+    hourlyByDay[day].pressure.push(pressure);
+  }
+});
+
+const dailyHumidity = data.daily.time.map((day) =>
+  average(hourlyByDay[day]?.humidity ?? [])
+);
+
+const dailyPressure = data.daily.time.map((day) =>
+  average(hourlyByDay[day]?.pressure ?? [])
+);
+
+setWeatherHistory({
+  ...data.daily,
+  relative_humidity_2m_mean: dailyHumidity,
+  pressure_msl_mean: dailyPressure,
+});
+
       } catch (error) {
         if (error.name !== 'AbortError') {
           setCurrentWeather({ temperature: null, condition: 'Unavailable' });
