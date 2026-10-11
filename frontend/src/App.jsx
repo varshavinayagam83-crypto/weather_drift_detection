@@ -173,6 +173,7 @@ function AppShell() {
       longitude: selectedLocation.longitude,
       current: 'temperature_2m,weather_code',
       daily: 'temperature_2m_max,temperature_2m_min,temperature_2m_mean,precipitation_sum,wind_speed_10m_max',
+      hourly: 'relative_humidity_2m,pressure_msl',
       past_days: '30',
       forecast_days: '1',
       timezone: 'auto',
